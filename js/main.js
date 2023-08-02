@@ -9,8 +9,8 @@ const bAdd = document.querySelector("#bAdd");
 const itTask = document.querySelector("#itTask");
 const form = document.querySelector("#form");
 
-renderTasks();
 renderTime();
+renderTasks();
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -21,25 +21,25 @@ form.addEventListener("submit", (e) => {
     }
 });
 
-function createTask(value){
+function createTask(value) {
     const newTask = {
-        id: (Math.random()*100).toString(36).slice(2),
+        id: (Math.random() * 100).toString(36).slice(2),
         title: value,
         completed: false,
     };
+
     tasks.unshift(newTask);
 }
 
-function renderTasks(){
+function renderTasks() {
     const html = tasks.map((task) => {
         return `
             <div class="task">
-                <div class="completed">${
-                    task.completed
-                        ? "<span class='done'>Done</span>"
-                        : `<button class="start-button" data-id="${task.id}">Start</button></div>`
-                    }
-                    <div class="title">${task.title}</div>
+                <div class="completed">${task.completed
+                    ? `<span class='done'>Done</span>`
+                    : `<button class="start-button" data-id="${task.id}">Start</button></div>`}
+                </div>
+                <div class="title">${task.title}</div>
             </div>`;
     });
     const tasksContainer = document.querySelector("#tasks");
@@ -47,16 +47,16 @@ function renderTasks(){
 
     const startButtons = document.querySelectorAll(".task .start-button");
     startButtons.forEach((startButton) => {
-        startButton.addEventListener("click", () =>{
-            if (!timer) {
-                startButtonHandler(startButton.getAttribute("data-id"));
-                startButton.textContent = "In progress...";
-            }
+        startButton.addEventListener("click", () => {
+        if (!timer) {
+            startButtonHandler(startButton.getAttribute("data-id"));
+            startButton.textContent = "In progress...";
+        }
         });
     });
 }
 
-function startButtonHandler(id){
+function startButtonHandler(id) {
     time = 0.5 * 60;
     current = id;
     const taskId = tasks.findIndex((task) => task.id === id);
@@ -66,40 +66,43 @@ function startButtonHandler(id){
     }, 1000);
 }
 
-function timerHandler(id = null){
+function timerHandler(id = null) {
     time--;
     renderTime();
     if (time === 0) {
+        clearInterval(timer);
         markComplete(id);
+        timer = null;
         clearInterval(timer);
         renderTasks();
         startBreak();
     }
 }
 
-function markComplete(id){
+function markComplete(id) {
     const taskId = tasks.findIndex((task) => task.id === id);
     tasks[taskId].completed = true;
 }
 
-function startBreak(){
+function startBreak() {
     time = 1 * 60;
     document.querySelector("#time #taskName").textContent = "Break";
     timerBreak = setInterval(timerBreakHandler, 1000);
 }
 
-function timerBreakHandler(){
+function timerBreakHandler() {
     time--;
     renderTime();
-    if (time === 0){
+    if (time === 0) {
         clearInterval(timerBreak);
         current = null;
+        timerBreak = null;
         document.querySelector("#time #taskName").textContent = "";
         renderTime();
     }
 }
 
-function renderTime(){
+function renderTime() {
     const timeDiv = document.querySelector("#time #value");
     const minutes = parseInt(time / 60);
     const seconds = parseInt(time % 60);
